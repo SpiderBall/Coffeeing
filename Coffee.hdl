@@ -26,54 +26,54 @@ CHIP Coffee {
 
 //------nextS0 logic----------------------
 	//add water
-	And8Way(a=notS2, b=notS1, c=notS0, d=start, e=empty, f=true, g=true, h=true, out=S0internal1); 	
+	And8Way(a=notS2, b=notS1, c=notS0, d=start, e=empty, f=true, g=true, h=true, out=addWater2); 	
 
 	//heating water
-	And8Way(a=notS2, b=notS1, c=notS0, d=start, e=carafe, f=notEmpty, g=true, h=true, out=S0internal2); 	
-	And4Way(a=notS2, b=S1, c=S0, d=notTemp, out=S0internal3); 	
+	And8Way(a=notS2, b=notS1, c=notS0, d=start, e=carafe, f=notEmpty, g=true, h=true, out=heatingWater1); 	
+	And4Way(a=notS2, b=S1, c=S0, d=notTemp, out=heatingWater2); 	
 
 	//not smart
-	And8Way(a=notS2, b=notS1, c=notS0, d=start, e=notCarafe, f=notEmpty, g=true, h=true, out=S0internal4); 	
+	And8Way(a=notS2, b=notS1, c=notS0, d=start, e=notCarafe, f=notEmpty, g=true, h=true, out=notSmart); 	
 
-	Or4Way(a=S0internal1, b=S0internal2, c=S0internal3, d=S0internal4, out=nextS0);
+	Or4Way(a=addWater2, b=heatingWater1, c=heatingWater2, d=notSmart, out=nextS0);
 
 //----------------------------------------
 
 //-----nextS1 logic-----------------------
 	//brewing	
-	And8Way(a=notS2, b=S1, c=S0, d=temp, e=true, f=true, g=true, h=true, out=S1internal1);
-	And8Way(a=notS2, b=S1, c=notS0, d=carafe, e=notEmpty, f=true, g=true, h=true, out=S1internal2);
-
+	And8Way(a=notS2, b=S1, c=S0, d=temp, e=true, f=true, g=true, h=true, out=brewing1);
+	And8Way(a=notS2, b=S1, c=notS0, d=carafe, e=notEmpty, f=true, g=true, h=true, out=brewing2);
+/*
 	//heating water
-	And8Way(a=notS2, b=S1, c=S0, d=notTemp, e=true, f=true, g=true, h=true, out=S1internal3);
-	And8Way(a=notS2, b=notS1, c=notS0, d=start, e=carafe, f=notEmpty, g=true, h=true, out=S1internal4);
-
+//	And8Way(a=notS2, b=S1, c=S0, d=notTemp, e=true, f=true, g=true, h=true, out=S1internal3);
+//	And8Way(a=notS2, b=notS1, c=notS0, d=start, e=carafe, f=notEmpty, g=true, h=true, out=S1internal4);
+*/
 	//sneak a cup
-	And8Way(a=notS2, b=S1, c=notS0, d=carafe, e=notEmpty, f=true, g=true, h=true, out=S1internal5);
-	And8Way(a=S2, b=S1,c=notS0, d=notCarafe, e=true, f=true, g=true, h=true, out=S1internal6);
+	And8Way(a=notS2, b=S1, c=notS0, d=carafe, e=notEmpty, f=true, g=true, h=true, out=sneakACup1);
+	And8Way(a=S2, b=S1,c=notS0, d=notCarafe, e=true, f=true, g=true, h=true, out=sneakACup2);
 	
-	Or8(a=S1internal1, b=S1internal2, c=S1internal3, d=S1internal4, e=S1internal5, f=S1internal6, g=false, h=false, out=nextS1);
+	Or8(a=brewing1, b=brewing2, c=sneakACup1, d=sneakACup2, e=heatingWater1, f=heatingWater2, g=false, h=false, out=nextS1);
 
 //----------------------------------------
 
 //----nextS2------------------------------
 
+/*
 	//sneak a cup
 	And8Way(a=notS2, b=S1, c=notS0, d=carafe, e=notEmpty, f=true, g=true, h=true, out=S2internal1);
 	And8Way(a=S2, b=S1, c=notS0, d=notCarafe, e=true, f=true, g=true, h=true, out=S2internal2);
+	
 
 	//not smart
 	And8Way(a=notS0, b=notS1, c=notS2, d=start, e=notCarafe, f=notEmpty, g=true, h=true, out=S2internal3);
-	
-	Or4Way(a=S2internal1, b=S2internal2,c=S2internal3,d=false, out=nextS2);
+	*/
+	Or4Way(a=sneakACup1, b=sneakACup2,c=notSmart,d=false, out=nextS2);
 
 //----------------------------------------
-
+/*
 //standby
 And4Way(a=notS2, b=notS1, c=notS0, d=true, out=standby);
 //--if 000, its true, otherwise no
-
-
 
 
 //add water
@@ -95,36 +95,29 @@ And4Way(a=notS2, b=S1, c=S0, d=true, out=heating);
 //--if 011, its true, otherwise no
 
 
-
-
 //sneak
 And4Way(a=S2, b=S1, c=notS0, d=true, out=sneak);
 //--if 110, its true, otherwise no
 
 
-
-
 //notsmart
-And4Way(a=S2, b=S1, c=S0, d=true, out=notsmart);
+//And4Way(a=S2, b=S1, c=S0, d=true, out=notsmart);
 //--if 111, its true, otherwise no
 
 
-
-
-
-
-
-
-
-
-
-
-
 //Or4Way(a=heating, b=brewing, c=sneak, d=false, out=heat);
-//Or4Way(a=false, b=brewing, c=false, d=false, out=percolate);
-//Or4Way(a=internalAddWater, b=false, c=false, d=false, out=addWater);
-//Or4Way(a=notsmart, b=false, c=false, d=false, out=noCarafe);
 
+Or4Way(a=false, b=brewing, c=false, d=false, out=percolate);
+Or4Way(a=internalAddWater, b=false, c=false, d=false, out=addWater2);
+Or4Way(a=notsmart, b=false, c=false, d=false, out=noCarafe);
+*/
+Or8(a=heatingWater1,b=heatingWater2,c=brewing1,d=brewing2,e=sneakACup1,f=sneakACup2,g=false,h=false,out=heat);
+
+Or8(a=false,b=false,c=brewing1,d=brewing2,e=false,f=false,g=false,h=false,out=percolate);
+
+Or8(a=addWater2,b=false,c=false,d=false,e=false,f=false,g=false,h=false,out=addWater);
+
+Or8(a=notSmart,b=false,c=false,d=false,e=false,f=false,g=false,h=false,out=noCarafe);
 
 }
 
